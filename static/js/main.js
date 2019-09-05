@@ -1,7 +1,13 @@
+function newSearch(link) {
+    let textfield = document.getElementById("inputUrl");
 
- function newSearch(link) {
-    var textfield = document.getElementById("inputUrl");
-    textfield.value = link;
-
-    document.getElementById("searchButton").click();
+    if (link.includes("http")) {
+        textfield.value = link;
+        document.getElementById("searchButton").click();
+    }
+    else {
+        textfield.value += link;
+        document.getElementById("searchButton").click();
+    }
 }
+

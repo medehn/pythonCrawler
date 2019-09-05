@@ -3,14 +3,14 @@
 
     <div class="input">
         <form action="/" method="post">
-            <input id = "inputUrl" class="textview" name="inputUrl" value="{{ inputUrl }}">
-            <input id = "searchButton" type="submit" value="Go">
+            <label for="inputUrl"></label><input id="inputUrl" class="textview" name="inputUrl" value="{{ inputUrl }}">
+            <input id="searchButton" type="submit" value="Go">
         </form>
         <br><br>
     </div>
 
+    <h2>Results for {{ inputUrl }}</h2>
     <table>
-
         <th>internal</th>
 
         {% for link in intern %}
@@ -19,11 +19,9 @@
             </tr>
 
         {% endfor %}
-
     </table>
 
     <table>
-
         <th>external</th>
 
         {% for link in extern %}
@@ -31,7 +29,6 @@
                 <td><a href="#" onclick='newSearch(this.innerHTML)'>{{ link }}</a></td>
             </tr>
         {% endfor %}
-
     </table>
 
 {% endblock %}
