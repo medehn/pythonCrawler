@@ -1,6 +1,7 @@
-function newSearch(){
 
-    var newLink = document.getElementById("myLink").textContent;
-    console.log(newLink);
-    console.log("Foo");
+ function newSearch(link) {
+    var textfield = document.getElementById("inputUrl");
+    textfield.value = link;
+
+    document.getElementById("searchButton").click();
 }

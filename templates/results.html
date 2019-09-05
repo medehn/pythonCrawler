@@ -3,32 +3,32 @@
 
     <div class="input">
         <form action="/" method="post">
-            <input class="textview" name="inputUrl" value="{{ inputUrl }}">
-            <input type="submit" value="Go">
+            <input id = "inputUrl" class="textview" name="inputUrl" value="{{ inputUrl }}">
+            <input id = "searchButton" type="submit" value="Go">
         </form>
         <br><br>
     </div>
 
-    <table id="links">
+    <table>
 
         <th>internal</th>
 
         {% for link in intern %}
             <tr>
-                <td><a id="myLink" href="#" onclick="newSearch()">{{ link }}</a></td>
+                <td><a href="#" onclick='newSearch(this.innerHTML)'>{{ link }}</a></td>
             </tr>
 
         {% endfor %}
 
     </table>
 
-    <table id="links">
+    <table>
 
         <th>external</th>
 
         {% for link in extern %}
             <tr>
-                <td><a id="myLink" href="#" onclick="MyFunction();">{{ link }}</a></td>
+                <td><a href="#" onclick='newSearch(this.innerHTML)'>{{ link }}</a></td>
             </tr>
         {% endfor %}
 
