@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EXAMPLE</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <script type="text/javascript" src="{{ url_for('static', filename='js/main.js') }}"></script>
+{#    <script src="main.js"></script>#}
+</head>
+<body>
+
+<div class="input">
+    <form action="/" method="post">
+        <input class="textview" name="inputUrl"  value = "{{ inputUrl }}">
+        <input type="submit" value="Go" >
+    </form>
+</div>
+
+    <table id="links">
+
+        <th>internal</th>
+
+        {% for link in intern %}
+            <tr> <td><a id="myLink" href="#" onclick="newSearch()">{{ link }}</a></td></tr>
+
+        {% endfor %}
+
+    </table>
+
+    <table id="links">
+
+        <th>external</th>
+
+        {% for link in extern %}
+            <tr> <td><a id="myLink" href="#" onclick="MyFunction();">{{ link }}</a></td></tr>
+        {% endfor %}
+
+    </table>
+
+</body>
+
+</html>

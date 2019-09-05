@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EXAMPLE</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+     <script type="text/javascript" src="{{ url_for('static', filename='js/main.js') }}"></script>
+{#    <script src="crawler.js"></script>#}
+</head>
+<body>
+
+<div class="input">
+    <form action="/results" method="post">
+        <input class="textview" name="inputUrl">
+        <input type="submit" value="Go" >
+    </form>
+</div>
+<br><br>
+<div class="container">
+
+    <table id="links">
+        <th>internal</th>
+
+    </table>
+    <table>
+        <th>external</th>
+    </table>
+</div>
+
+</body>
+
+</html>
