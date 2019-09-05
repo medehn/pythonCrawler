@@ -9,23 +9,8 @@
 </head>
 <body>
 
-<div class="input">
-    <form action="/results" method="post">
-        <input class="textview" name="inputUrl">
-        <input type="submit" value="Go" >
-    </form>
-</div>
-<br><br>
-<div class="container">
-
-    <table id="links">
-        <th>internal</th>
-
-    </table>
-    <table>
-        <th>external</th>
-    </table>
-</div>
+    {% block content %}
+    {% endblock %}
 
 </body>
 

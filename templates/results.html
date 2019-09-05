@@ -1,27 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>EXAMPLE</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
-    <script type="text/javascript" src="{{ url_for('static', filename='js/main.js') }}"></script>
-{#    <script src="main.js"></script>#}
-</head>
-<body>
+{% extends "index.html" %}
+{% block content %}
 
-<div class="input">
-    <form action="/" method="post">
-        <input class="textview" name="inputUrl"  value = "{{ inputUrl }}">
-        <input type="submit" value="Go" >
-    </form>
-</div>
+    <div class="input">
+        <form action="/" method="post">
+            <input class="textview" name="inputUrl" value="{{ inputUrl }}">
+            <input type="submit" value="Go">
+        </form>
+        <br><br>
+    </div>
 
     <table id="links">
 
         <th>internal</th>
 
         {% for link in intern %}
-            <tr> <td><a id="myLink" href="#" onclick="newSearch()">{{ link }}</a></td></tr>
+            <tr>
+                <td><a id="myLink" href="#" onclick="newSearch()">{{ link }}</a></td>
+            </tr>
 
         {% endfor %}
 
@@ -32,11 +27,11 @@
         <th>external</th>
 
         {% for link in extern %}
-            <tr> <td><a id="myLink" href="#" onclick="MyFunction();">{{ link }}</a></td></tr>
+            <tr>
+                <td><a id="myLink" href="#" onclick="MyFunction();">{{ link }}</a></td>
+            </tr>
         {% endfor %}
 
     </table>
 
-</body>
-
-</html>
+{% endblock %}
