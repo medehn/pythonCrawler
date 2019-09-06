@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EXAMPLE</title>
+
+</head>
+<body>
+   <h1>Links</h1>
+   <ol>
+       {% for link in links %}
+       <li> {{link.inputUrl}}  {{link.links}} </li>
+
+       {% endfor %}
+   </ol>
+</body>
+</html>

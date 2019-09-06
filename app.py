@@ -2,8 +2,39 @@ from flask import Flask, request, redirect, url_for
 from flask import render_template
 import requests
 import re
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from db_setup import Base, LinkList
 
 app = Flask(__name__)
+
+engine = create_engine('sqlite:///linklist.db')
+Base.metadata.bind = engine
+
+DBSession = sessionmaker(bind=engine)
+session = DBSession()
+
+@app.route('/linklist')
+def showLinks():
+
+   links = session.query(LinkList).all()
+
+   testLink = LinkList(inputUrl="www.test.at", links="ein Link")
+   testLink2 = LinkList(inputUrl="www.nocheinlink.at", links="du doof Link")
+   session.add(testLink)
+   session.add(testLink2)
+   session.commit()
+
+   return render_template("linklist.html", links=links)
+
+# def newLink():
+#    if request.method == 'POST':
+#        newLink = LinkList(inputUrl = request.form['inputUrl'], links = request.form['links'])
+#        session.add(newLink)
+#        session.commit()
+#        return redirect(url_for('showLinks'))
+
+
 
 
 @app.route('/', methods=["GET", "POST"])
