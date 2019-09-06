@@ -1,19 +1,29 @@
 from sqlalchemy import create_engine
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import String
+from sqlalchemy import Column, Integer, ForeignKey
+from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy_utils import database_exists, drop_database
 
 Base = declarative_base()
 
 
-class LinkList(Base):
-    __tablename__ = 'linklist'
+class BaseUrl(Base):
+    __tablename__ = 'bases'
 
     id = Column(Integer, primary_key=True)
-    inputUrl = Column(String(250), nullable=False)
-    links = Column(String(250))
+    baseUrl = Column(String(250), nullable=False)
+    links = relationship("RelatedLinks", back_populates="linklist")
+
+
+class RelatedLinks(Base):
+    __tablename__ = 'links'
+
+    id = Column(Integer, primary_key=True)
+    linkUrl = Column(String(250))
+    linklist_id = Column(Integer, ForeignKey('bases.id'))
+    linklist = relationship("BaseUrl", back_populates="links")
 
 
 engine = create_engine('sqlite:///linklist.db')
-drop_database(engine.url)
+
 Base.metadata.create_all(engine)
