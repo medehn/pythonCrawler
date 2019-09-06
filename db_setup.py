@@ -12,7 +12,7 @@ class BaseUrl(Base):
 
     id = Column(Integer, primary_key=True)
     baseUrl = Column(String(250), nullable=False)
-    links = relationship("RelatedLinks", back_populates="linklist")
+    links = relationship("RelatedLinks")
 
 
 class RelatedLinks(Base):
@@ -21,7 +21,7 @@ class RelatedLinks(Base):
     id = Column(Integer, primary_key=True)
     linkUrl = Column(String(250))
     linklist_id = Column(Integer, ForeignKey('bases.id'))
-    linklist = relationship("BaseUrl", back_populates="links")
+
 
 
 engine = create_engine('sqlite:///linklist.db')

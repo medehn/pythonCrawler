@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, url_for
+from flask import Flask, request
 from flask import render_template
 import requests
 import re
@@ -6,7 +6,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from db_setup import Base, BaseUrl, RelatedLinks
 from sqlalchemy.orm import scoped_session
-from sqlalchemy.sql.expression import select, exists
+from sqlalchemy.sql.expression import exists
 
 app = Flask(__name__)
 
@@ -20,48 +20,91 @@ session = scoped_session(DBSession)
 @app.route('/linklist')
 def showLinks():
     links = session.query(BaseUrl).all()
-    relatedLinks = session.query(RelatedLinks).all()
+    related_links = session.query(RelatedLinks).all()
 
-    return render_template("linklist.html", links=links, relatedLinks=relatedLinks)
+    return render_template("linklist.html", links=links, relatedLinks=related_links)
 
 
 @app.route('/', methods=["GET", "POST"])
 def getLinks():
     if request.method == "POST":
-        inputUrl = request.form['inputUrl']
+        input_url = request.form['inputUrl']
+
+        checkAndAddToDB()
 
         # get list of links
-        siteRequest = requests.get(inputUrl)
-        linkList = re.findall(r'<a[^>]* href="([^"]*)"', str(siteRequest.content))
-        internalLinks = []
-        externalLinks = linkList.copy()
+        input_url = request.form['inputUrl']
+        site_request = requests.get(input_url)
+        link_list = re.findall(r'<a[^>]* href="([^"]*)"', str(site_request.content))
+        internal_links = []
+        external_links = link_list.copy()
 
-        # database communication
-        urlInDb = session.query(exists().where(BaseUrl.baseUrl == inputUrl)).scalar()
+        urlInDb = session.query(exists().where(BaseUrl.baseUrl == input_url)).scalar()
+
         if not urlInDb:
-            newBaseUrl = BaseUrl(baseUrl=inputUrl)
-            session.add(newBaseUrl)
+            for link in link_list:
+                if link.startswith(site_request.url) or link.startswith('#'):
+                    new_link = link.split(site_request.url)
+                    internal_links.append(new_link[-1])
+                    external_links.remove(link)
+
+        else:
+            #rabenbund = session.query(BaseUrl).filter_by(baseUrl=input_url).one()
+            #print(rabenbund)
+            # linkList = session.query(RelatedLinks.linkUrl).all()
+            baseUrlObject = session.query(BaseUrl).filter_by(baseUrl=input_url).one()
+            linkList = baseUrlObject.links
 
             for link in linkList:
-                newRelatedLink = RelatedLinks(linkUrl=link)
-                session.add(newRelatedLink)
+                link = link.linkUrl
+                print(link)
+                if link.startswith(site_request.url)or link.startswith('#')or link.startswith('/'):
+                    newLink = link.split(site_request.url)
+                    internal_links.append(newLink[-1])
+                    external_links.remove(link)
 
-            session.commit()
+        internal_links.sort()
+        external_links.sort()
 
         # order lists
 
-        for link in linkList:
-            if link.startswith(siteRequest.url) or link.startswith('#'):
-                newLink = link.split(siteRequest.url)
-                internalLinks.append('/' + newLink[-1])
-                externalLinks.remove(link)
-        internalLinks.sort()
-        externalLinks.sort()
+        #     linkList = session.query(RelatedLinks.linkUrl).all()
+        #     for link in linkList:
+        #
+        #         if link.startswith(siteRequest.url) or link.startswith('#'):
+        #             newLink = link.split(siteRequest.url)
+        #             internalLinks.append('/' + newLink[-1])
+        #             externalLinks.remove(link)
 
-        return render_template("results.html", inputUrl=inputUrl, intern=internalLinks, extern=externalLinks)
+        return render_template("results.html", inputUrl=input_url, intern=internal_links, extern=external_links)
 
     else:
         return render_template("results.html")
+
+
+def checkAndAddToDB():
+    # database communication
+    input_url = request.form['inputUrl']
+
+    # get list of links
+    site_request = requests.get(input_url)
+    link_list = re.findall(r'<a[^>]* href="([^"]*)"', str(site_request.content))
+
+    urlInDb = session.query(exists().where(BaseUrl.baseUrl == input_url)).scalar()
+    if not urlInDb:
+        new_base_url = BaseUrl(baseUrl=input_url)
+        session.add(new_base_url)
+        session.flush()
+
+        for link in link_list:
+            newRelatedLink = RelatedLinks(linkUrl=link, linklist_id=new_base_url.id)
+
+            session.add(newRelatedLink)
+
+        session.commit()
+
+    else:
+        print("nur bei alten links!")
 
 
 if __name__ == '__main__':
