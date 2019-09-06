@@ -5,6 +5,7 @@ import re
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from db_setup import Base, LinkList
+from sqlalchemy.orm import scoped_session
 
 app = Flask(__name__)
 
@@ -12,7 +13,8 @@ engine = create_engine('sqlite:///linklist.db')
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
-session = DBSession()
+session = scoped_session(DBSession)
+
 
 @app.route('/linklist')
 def showLinks():
