@@ -46,7 +46,8 @@ def getLinks():
                 if link.startswith(site_request.url) or link.startswith('#'):
                     new_link = link.split(site_request.url)
                     internal_links.append(new_link[-1])
-                    external_links.remove(link)
+                    if link in external_links:
+                        external_links.remove(link)
 
         else:
             #rabenbund = session.query(BaseUrl).filter_by(baseUrl=input_url).one()
@@ -61,7 +62,8 @@ def getLinks():
                 if link.startswith(site_request.url)or link.startswith('#')or link.startswith('/'):
                     newLink = link.split(site_request.url)
                     internal_links.append(newLink[-1])
-                    external_links.remove(link)
+                    if link in external_links:
+                        external_links.remove(link)
 
         internal_links.sort()
         external_links.sort()
