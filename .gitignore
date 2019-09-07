@@ -6,6 +6,9 @@ __pycache__/
 # pycharm
 .idea/
 
+# database
+linklist.db
+
 # C extensions
 *.so
 
