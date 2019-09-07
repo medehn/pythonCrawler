@@ -10,25 +10,45 @@
     </div>
 
     <h2>Results for {{ inputUrl }}</h2>
-    <table>
-        <th>internal</th>
 
-        {% for link in intern %}
-            <tr>
-                <td><a href="#" onclick='newSearch(this.innerHTML)'>{{ link }}</a></td>
-            </tr>
+    <div class="row">
+        <div class="col-md-3">
+            <table class="table table-responsive ">
+                <tbody>
+                <tr class="clickable" data-toggle="collapse" data-target="#group-of-rows-1" aria-expanded="false"
+                    aria-controls="group-of-rows-1">
+                    <td>Internal Links</td>
+                </tr>
+                </tbody>
+                <tbody id="group-of-rows-1" class="collapse">
+                {% for link in intern %}
+                    <tr>
+                        <td><a href="#" onclick='newSearch(this.innerHTML)'>{{ link }}</a></td>
+                    </tr>
 
-        {% endfor %}
-    </table>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
-    <table>
-        <th>external</th>
+        <div class="col-md-3">
+            <table class="table table-responsive">
+                <tbody>
+                <tr class="clickable" data-toggle="collapse" data-target="#group-of-rows-2" aria-expanded="false"
+                    aria-controls="group-of-rows-1">
+                    <td>External Links</td>
+                </tr>
+                </tbody>
+                <tbody id="group-of-rows-2" class="collapse">
+                {% for link in extern %}
+                    <tr>
+                        <td><a href="#" onclick='newSearch(this.innerHTML)'>{{ link }}</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-        {% for link in extern %}
-            <tr>
-                <td><a href="#" onclick='newSearch(this.innerHTML)'>{{ link }}</a></td>
-            </tr>
-        {% endfor %}
-    </table>
 
 {% endblock %}
