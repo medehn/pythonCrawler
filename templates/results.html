@@ -23,9 +23,11 @@
                 </thead>
                 <tbody id="group-of-rows-1" class="collapse">
                 {% for link in intern %}
-                    <tr>
-                        <td><a href="#" onclick='newSearch(this.innerHTML)'>{{ link }}</a></td>
-                    </tr>
+                    {% if link %}
+                        <tr>
+                            <td><a href="#" onclick='newSearch(this.innerHTML)'>{{ link }}</a></td>
+                        </tr>
+                    {% endif %}
 
                 {% endfor %}
                 </tbody>
@@ -44,9 +46,11 @@
 
                 <tbody id="group-of-rows-2" class="collapse">
                 {% for link in extern %}
-                    <tr>
-                        <td><a href="#" onclick='newSearch(this.innerHTML)'>{{ link }}</a></td>
-                    </tr>
+                    {% if link %}
+                        <tr>
+                            <td><a href="#" onclick='newSearch(this.innerHTML)'>{{ link }}</a></td>
+                        </tr>
+                    {% endif %}
                 {% endfor %}
                 </tbody>
             </table>
