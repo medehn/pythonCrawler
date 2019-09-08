@@ -72,8 +72,7 @@ def getLinks():
 
 def checkAndAddToDB(input_url, link_list):
     # database communication
-    urlInDb = session.query(exists().where(BaseUrl.baseUrl == input_url)).scalar()
-    if not urlInDb:
+
         new_base_url = BaseUrl(baseUrl=input_url)
         session.add(new_base_url)
         session.flush()
