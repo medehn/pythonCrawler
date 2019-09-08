@@ -11,15 +11,16 @@
 
     <h2>Results for {{ inputUrl }}</h2>
 
-    <div class="row">
+    <div class="row" id="results">
         <div class="col-md-3">
             <table class="table table-responsive ">
-                <tbody>
+                <thead>
                 <tr class="clickable" data-toggle="collapse" data-target="#group-of-rows-1" aria-expanded="false"
                     aria-controls="group-of-rows-1">
                     <td>Internal Links</td>
+                    <td><i  class="fa fa-sort-down" ></i></td>
                 </tr>
-                </tbody>
+                </thead>
                 <tbody id="group-of-rows-1" class="collapse">
                 {% for link in intern %}
                     <tr>
@@ -33,12 +34,14 @@
 
         <div class="col-md-3">
             <table class="table table-responsive">
-                <tbody>
+                <thead>
                 <tr class="clickable" data-toggle="collapse" data-target="#group-of-rows-2" aria-expanded="false"
-                    aria-controls="group-of-rows-1">
+                    aria-controls="group-of-rows-2">
                     <td>External Links</td>
+                    <td><i class="fa fa-sort-down"></i></td>
                 </tr>
-                </tbody>
+                </thead>
+
                 <tbody id="group-of-rows-2" class="collapse">
                 {% for link in extern %}
                     <tr>

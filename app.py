@@ -7,6 +7,7 @@ from sqlalchemy.orm import sessionmaker
 from db_setup import Base, BaseUrl, RelatedLinks
 from sqlalchemy.orm import scoped_session
 from sqlalchemy.sql.expression import exists
+from flask_fontawesome import FontAwesome
 
 app = Flask(__name__)
 
