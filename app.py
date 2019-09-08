@@ -7,7 +7,6 @@ from sqlalchemy.orm import sessionmaker
 from db_setup import Base, BaseUrl, RelatedLinks
 from sqlalchemy.orm import scoped_session
 from sqlalchemy.sql.expression import exists
-from flask_fontawesome import FontAwesome
 
 app = Flask(__name__)
 
@@ -18,29 +17,28 @@ DBSession = sessionmaker(bind=engine)
 session = scoped_session(DBSession)
 
 
-# @app.route('/linklist')
-# def showLinks():
-#     links = session.query(BaseUrl).all()
-#     related_links = session.query(RelatedLinks).all()
-#
-#     return render_template("linklist.html", links=links, relatedLinks=related_links)
-
-
 @app.route('/', methods=["GET", "POST"])
 def getLinks():
     if request.method == "POST":
 
-        checkAndAddToDB()
+        # error handlind to give feedback to user if an invalid URL was passed
+        try:
+            input_url = request.form['inputUrl']
 
-        # get list of links
-        input_url = request.form['inputUrl']
-        site_request = requests.get(input_url)
-        link_list = re.findall(r'<a[^>]* href="([^"]*)"', str(site_request.content))
+            # get list of links
+            site_request = requests.get(input_url)
+            link_list = re.findall(r'<a[^>]* href="([^"]*)"', str(site_request.content))
+
+        except:
+            abort(500, "Please provide a working URL with  http://... or https://.")
+
+        # sort links into internal/external
         internal_links = []
         external_links = link_list.copy()
 
         urlInDb = session.query(exists().where(BaseUrl.baseUrl == input_url)).scalar()
 
+        # checking for links that have not yet been added to search history/db
         if not urlInDb:
             for link in link_list:
                 if link.startswith(site_request.url) or link.startswith('#'):
@@ -48,14 +46,16 @@ def getLinks():
                     internal_links.append(new_link[-1])
                     if link in external_links:
                         external_links.remove(link)
+            checkAndAddToDB(input_url, link_list)
 
+        # if in db - read entries from db
         else:
             baseUrlObject = session.query(BaseUrl).filter_by(baseUrl=input_url).one()
             linkList = baseUrlObject.links
 
             for link in linkList:
                 link = link.linkUrl
-                if link.startswith(site_request.url)or link.startswith('#')or link.startswith('/'):
+                if link.startswith(site_request.url) or link.startswith('#') or link.startswith('/'):
                     newLink = link.split(site_request.url)
                     internal_links.append(newLink[-1])
                     if link in external_links:
@@ -70,18 +70,8 @@ def getLinks():
         return render_template("results.html")
 
 
-def checkAndAddToDB():
+def checkAndAddToDB(input_url, link_list):
     # database communication
-    try:
-        input_url = request.form['inputUrl']
-
-    # get list of links
-        site_request = requests.get(input_url)
-        link_list = re.findall(r'<a[^>]* href="([^"]*)"', str(site_request.content))
-
-    except:
-        abort(500, "Please provide an URL with  http://... or https://.")
-
     urlInDb = session.query(exists().where(BaseUrl.baseUrl == input_url)).scalar()
     if not urlInDb:
         new_base_url = BaseUrl(baseUrl=input_url)
@@ -90,13 +80,9 @@ def checkAndAddToDB():
 
         for link in link_list:
             newRelatedLink = RelatedLinks(linkUrl=link, linklist_id=new_base_url.id)
-
             session.add(newRelatedLink)
 
         session.commit()
-
-    else:
-        print("nur bei alten links!")
 
 
 if __name__ == '__main__':

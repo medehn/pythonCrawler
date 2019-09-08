@@ -4,8 +4,7 @@ function newSearch(link) {
     if (link.includes("http")) {
         textfield.value = link;
         document.getElementById("searchButton").click();
-    }
-    else {
+    } else {
         textfield.value += link;
         document.getElementById("searchButton").click();
     }
