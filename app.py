@@ -10,18 +10,18 @@ from sqlalchemy.sql.expression import exists
 
 app = Flask(__name__)
 
+# connection to db
 engine = create_engine('sqlite:///linklist.db')
 Base.metadata.bind = engine
-
 DBSession = sessionmaker(bind=engine)
 session = scoped_session(DBSession)
 
 
 @app.route('/', methods=["GET", "POST"])
-def getLinks():
+def get_links():
     if request.method == "POST":
 
-        # error handlind to give feedback to user if an invalid URL was passed
+        # error handling to give feedback to user if an invalid URL was passed
         try:
             input_url = request.form['inputUrl']
 
@@ -36,28 +36,28 @@ def getLinks():
         internal_links = []
         external_links = link_list.copy()
 
-        urlInDb = session.query(exists().where(BaseUrl.baseUrl == input_url)).scalar()
+        url_in_db = session.query(exists().where(BaseUrl.baseUrl == input_url)).scalar()
 
         # checking for links that have not yet been added to search history/db
-        if not urlInDb:
+        if not url_in_db:
             for link in link_list:
                 if link.startswith(site_request.url) or link.startswith('#'):
                     new_link = link.split(site_request.url)
                     internal_links.append(new_link[-1])
                     if link in external_links:
                         external_links.remove(link)
-            checkAndAddToDB(input_url, link_list)
+            add_to_db(input_url, link_list)
 
         # if in db - read entries from db
         else:
-            baseUrlObject = session.query(BaseUrl).filter_by(baseUrl=input_url).one()
-            linkList = baseUrlObject.links
+            base_url_object = session.query(BaseUrl).filter_by(baseUrl=input_url).one()
+            linkList = base_url_object.links
 
             for link in linkList:
                 link = link.linkUrl
                 if link.startswith(site_request.url) or link.startswith('#') or link.startswith('/'):
-                    newLink = link.split(site_request.url)
-                    internal_links.append(newLink[-1])
+                    new_link = link.split(site_request.url)
+                    internal_links.append(new_link[-1])
                     if link in external_links:
                         external_links.remove(link)
 
@@ -70,18 +70,18 @@ def getLinks():
         return render_template("results.html")
 
 
-def checkAndAddToDB(input_url, link_list):
-    # database communication
+def add_to_db(input_url, link_list):
+    # database communication, add base-Url and related links
 
-        new_base_url = BaseUrl(baseUrl=input_url)
-        session.add(new_base_url)
-        session.flush()
+    new_base_url = BaseUrl(baseUrl=input_url)
+    session.add(new_base_url)
+    session.flush()
 
-        for link in link_list:
-            newRelatedLink = RelatedLinks(linkUrl=link, linklist_id=new_base_url.id)
-            session.add(newRelatedLink)
+    for link in link_list:
+        new_related_link = RelatedLinks(linkUrl=link, linklist_id=new_base_url.id)
+        session.add(new_related_link)
 
-        session.commit()
+    session.commit()
 
 
 if __name__ == '__main__':

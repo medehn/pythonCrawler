@@ -4,6 +4,7 @@ from sqlalchemy import Column, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
+# class for database setup - creating a database with two tables
 Base = declarative_base()
 
 
@@ -21,7 +22,6 @@ class RelatedLinks(Base):
     id = Column(Integer, primary_key=True)
     linkUrl = Column(String(250))
     linklist_id = Column(Integer, ForeignKey('bases.id'))
-
 
 
 engine = create_engine('sqlite:///linklist.db')
