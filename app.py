@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, abort
 from flask import render_template
 import requests
 import re
@@ -17,18 +17,17 @@ DBSession = sessionmaker(bind=engine)
 session = scoped_session(DBSession)
 
 
-@app.route('/linklist')
-def showLinks():
-    links = session.query(BaseUrl).all()
-    related_links = session.query(RelatedLinks).all()
-
-    return render_template("linklist.html", links=links, relatedLinks=related_links)
+# @app.route('/linklist')
+# def showLinks():
+#     links = session.query(BaseUrl).all()
+#     related_links = session.query(RelatedLinks).all()
+#
+#     return render_template("linklist.html", links=links, relatedLinks=related_links)
 
 
 @app.route('/', methods=["GET", "POST"])
 def getLinks():
     if request.method == "POST":
-        input_url = request.form['inputUrl']
 
         checkAndAddToDB()
 
@@ -50,15 +49,11 @@ def getLinks():
                         external_links.remove(link)
 
         else:
-            #rabenbund = session.query(BaseUrl).filter_by(baseUrl=input_url).one()
-            #print(rabenbund)
-            # linkList = session.query(RelatedLinks.linkUrl).all()
             baseUrlObject = session.query(BaseUrl).filter_by(baseUrl=input_url).one()
             linkList = baseUrlObject.links
 
             for link in linkList:
                 link = link.linkUrl
-                print(link)
                 if link.startswith(site_request.url)or link.startswith('#')or link.startswith('/'):
                     newLink = link.split(site_request.url)
                     internal_links.append(newLink[-1])
@@ -68,16 +63,6 @@ def getLinks():
         internal_links.sort()
         external_links.sort()
 
-        # order lists
-
-        #     linkList = session.query(RelatedLinks.linkUrl).all()
-        #     for link in linkList:
-        #
-        #         if link.startswith(siteRequest.url) or link.startswith('#'):
-        #             newLink = link.split(siteRequest.url)
-        #             internalLinks.append('/' + newLink[-1])
-        #             externalLinks.remove(link)
-
         return render_template("results.html", inputUrl=input_url, intern=internal_links, extern=external_links)
 
     else:
@@ -86,11 +71,15 @@ def getLinks():
 
 def checkAndAddToDB():
     # database communication
-    input_url = request.form['inputUrl']
+    try:
+        input_url = request.form['inputUrl']
 
     # get list of links
-    site_request = requests.get(input_url)
-    link_list = re.findall(r'<a[^>]* href="([^"]*)"', str(site_request.content))
+        site_request = requests.get(input_url)
+        link_list = re.findall(r'<a[^>]* href="([^"]*)"', str(site_request.content))
+
+    except:
+        abort(500, "Please provide an URL with  http://... or https://.")
 
     urlInDb = session.query(exists().where(BaseUrl.baseUrl == input_url)).scalar()
     if not urlInDb:
